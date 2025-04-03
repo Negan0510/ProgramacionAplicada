@@ -1,0 +1,19 @@
+precio_cafe = 3.000
+numero de cafes = 5
+ 
+# Prints "6.0"
+print(precio cafe * numero de cafes)
+# Prints "1.5"
+print(precio cafe)
+# Prints "5"
+print(numero de cafes)
+ 
+# Updating the price 
+precio cafe = 2.00
+ 
+# Prints "8.0"
+print(precio_cafe * numero de cafes)
+# Prints "2.0"
+print(precio cafe)
+# Prints "4"
+print(numero de cafes)
