@@ -1,0 +1,15 @@
+import csv
+import random
+#Para escribir el archivo
+Valores=random.random() for i in range (30)
+
+
+with open(¨Valores.csv¨, mode="w", newline=¨¨) as archivo:
+   esc=csv.write(archivo)
+   esc.writeows(valor) for valor in Valores)
+
+#Para leer el archivo
+with opne(¨Valores.csv¨,mode=¨r¨) as archivo:
+   leer= csv.reader(archivo)
+   for fila in leer:
+       print(fila)
