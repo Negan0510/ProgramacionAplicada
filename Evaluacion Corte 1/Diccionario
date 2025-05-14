@@ -1,0 +1,130 @@
+//Datos a ingresar:    Numero de identificacion:12345     Clave:1234
+
+class Persona:
+    def __init__(self, identificacion, nombre, telefono, edad, ocupacion):
+        self.identificacion = identificacion
+        self.nombre = nombre
+        self.telefono = telefono
+        self.edad = edad
+        self.ocupacion = ocupacion
+
+class Cliente(Persona):
+    def __init__(self, datos, clave):
+        super().__init__(*datos)
+        self.clave = clave
+        self.cuenta_ahorros = None
+        self.cuenta_corriente = None
+
+class CuentaAhorros:
+    def __init__(self, numero, saldo, tasa_interes):
+        self.numero = numero
+        self.saldo = saldo
+        self.tasa_interes = tasa_interes
+
+    def depositar(self, monto):
+        self.saldo += monto
+        return f"Depósito exitoso. Saldo actual: ${self.saldo:.2f}"
+
+    def retirar(self, monto):
+        if monto <= self.saldo:
+            self.saldo -= monto
+            return f"Retiro exitoso. Saldo actual: ${self.saldo:.2f}"
+        return "Saldo insuficiente"
+
+class CuentaCorriente:
+    def __init__(self, numero, saldo, cupo_sobregiro):
+        self.numero = numero
+        self.saldo = saldo
+        self.cupo_sobregiro = cupo_sobregiro
+
+    def depositar(self, monto):
+        self.saldo += monto
+        return f"Depósito exitoso. Saldo actual: ${self.saldo:.2f}"
+
+    def retirar(self, monto):
+        disponible = self.saldo + self.cupo_sobregiro
+        if monto <= disponible:
+            self.saldo -= monto
+            return f"Retiro exitoso. Saldo actual: ${self.saldo:.2f}"
+        return "Límite de sobregiro excedido"
+
+def mostrar_menu_principal():
+    print("\n--- Cajero Automático ---")
+    print("1. Retirar dinero")
+    print("2. Depositar dinero")
+    print("3. Consultar saldos")
+    print("4. Finalizar sesión")
+    return input("Seleccione una opción: ")
+
+def seleccionar_cuenta(cliente):
+    cuentas = []
+    if cliente.cuenta_ahorros: cuentas.append(("Ahorros", cliente.cuenta_ahorros))
+    if cliente.cuenta_corriente: cuentas.append(("Corriente", cliente.cuenta_corriente))
+    
+    if len(cuentas) > 1:
+        print("\nSeleccione cuenta:")
+        for i, (tipo, _) in enumerate(cuentas, 1):
+            print(f"{i}. {tipo}")
+        seleccion = int(input("Opción: ")) - 1
+        return cuentas[seleccion]
+    return cuentas[0] if cuentas else None
+
+def autenticar_cliente(clientes):
+    intentos = 3
+    while intentos > 0:
+        id_cliente = input("\nIngrese su identificación: ")
+        clave = input("Ingrese su clave: ")
+        
+        for cliente in clientes:
+            if cliente.identificacion == id_cliente and cliente.clave == clave:
+                return cliente
+        
+        intentos -= 1
+        print(f"Credenciales incorrectas. Intentos restantes: {intentos}")
+    
+    print("Tarjeta retenida. Contacte al banco.")
+    return None
+
+def main():
+    # Base de datos de prueba
+    clientes = [
+        Cliente(("12345", "Juan Pérez", "555-1234", 35, " trabajador"), "1234"),
+    ]
+    
+    # Configurar 123cuentas de prueba
+    clientes[0].cuenta_ahorros = CuentaAhorros("AH-001", 1500.0, 0.02)
+    clientes[0].cuenta_corriente = CuentaCorriente("CC-001", 500.0, 1000.0)
+    
+    cliente_autenticado = autenticar_cliente(clientes)
+    if not cliente_autenticado:
+        return
+
+    while True:
+        opcion = mostrar_menu_principal()
+        
+        if opcion == "1" or opcion == "2":
+            cuenta = seleccionar_cuenta(cliente_autenticado)
+            if not cuenta:
+                print("No tiene cuentas registradas")
+                continue
+            
+            monto = float(input(f"Ingrese monto a {'retirar' if opcion == '1' else 'depositar'}: $"))
+            resultado = cuenta[1].retirar(monto) if opcion == "1" else cuenta[1].depositar(monto)
+            print(resultado)
+        
+        elif opcion == "3":
+            print("\n--- Saldos ---")
+            if cliente_autenticado.cuenta_ahorros:
+                print(f"Ahorros: ${cliente_autenticado.cuenta_ahorros.saldo:.2f}")
+            if cliente_autenticado.cuenta_corriente:
+                print(f"Corriente: ${cliente_autenticado.cuenta_corriente.saldo:.2f}")
+        
+        elif opcion == "4":
+            print("\nGracias por usar nuestros servicios")
+            break
+        
+        else:
+            print("Opción inválida")
+
+if __name__ == "__main__":
+    main()
